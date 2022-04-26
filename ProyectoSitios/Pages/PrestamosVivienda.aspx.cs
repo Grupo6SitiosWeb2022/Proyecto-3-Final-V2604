@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using CapaNegocio;
+using CapaDatos;
+
+namespace ProyectoSitios.Pages
+{
+    public partial class PrestamosVivienda : System.Web.UI.Page
+    {
+        NCorreo correos = new NCorreo();
+        string correo, nombre;
+        Nusuarios user = new Nusuarios();
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void btncalcu_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("../Pages/CalcularPrestamos.aspx");
+        }
+
+        protected void btnformu_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("../Pages/FormularioC.aspx");
+
+        }
+
+        protected void btncorreo_Click(object sender, EventArgs e)
+        {
+            string nombreprestamo = "PRÉSTAMO VIVIENDA";
+            string titulollamativo = "¿Tiene algún imprevisto?";
+            string texto = "Te ofrecemos una solución ágil de financiamiento para que estrenés en menor tiempo tu nuevo hogar.";
+            if (LUser.login != "1")
+            {
+                LUser.aux = "1";
+                LUser.mensaje = "Deberá iniciar sesión para tener acceso a la información por correo.";
+                Response.Redirect("login.aspx");
+            }
+            else
+            {
+                cargarinfoUsuarios();
+                correos.SendMailPrestamo(correo, nombre, nombreprestamo, titulollamativo, texto);
+            }
+        }
+        public void cargarinfoUsuarios()
+        {
+            List<Usuarios> users = user.ListarUsuarios();
+
+            foreach (Usuarios user1 in users)
+            {
+
+                if (user1.Identificacion == LUser.IdentificacionCliente)
+                {
+                    correo = user1.CorreoElectronico.ToString();
+                    nombre = user1.NombreCompleto;
+                }
+            }
+        }
+    }
+}
